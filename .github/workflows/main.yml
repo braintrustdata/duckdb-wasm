@@ -15,6 +15,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.head_ref || '' }}-${{ github.base_ref || '' }}-${{ github.ref != 'refs/heads/main' || github.sha }}
   cancel-in-progress: true
 
+env:
+    DUCKDB_JSON: 1
+
 jobs:
     clang_format:
         name: Clang-Format
@@ -239,6 +242,8 @@ jobs:
               uses: duckdb/duckdb-wasm-ci-env@ae43fa250a6b6ba92fe3d825c6c34b6d68a258a0
               with:
                   script: |-
+                      mkdir -p ./.ccache/extension
+                      touch ./.ccache/extension/json
                       cmake \
                           -S./lib/ \
                           -B./lib/build/debug \
@@ -335,6 +340,8 @@ jobs:
               uses: duckdb/duckdb-wasm-ci-env@ae43fa250a6b6ba92fe3d825c6c34b6d68a258a0
               with:
                   script: |-
+                      mkdir -p ./.ccache/extension
+                      touch ./.ccache/extension/json
                       cmake \
                           -S./lib/ \
                           -B./lib/build/release \
@@ -749,8 +756,8 @@ jobs:
               if: env.NODE_AUTH_TOKEN != null && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
               run: |
                   ./scripts/npm_publish_lib.sh
-                  ./scripts/npm_publish_shell.sh
-                  ./scripts/npm_publish_react.sh
+                  # ./scripts/npm_publish_shell.sh
+                  # ./scripts/npm_publish_react.sh
 
             - name: Build @duckdb/benchmarks
               shell: bash
